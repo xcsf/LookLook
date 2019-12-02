@@ -31,18 +31,5 @@ export default {
 <style lang="scss" scoped>
 .g-sider {
   position: relative;
-  > button {
-    position: absolute;
-    top: 0;
-    right: 0;
-  }
-}
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 1s;
-}
-.slide-enter,
-.slide-leave-to {
-  margin-left: -100%;
 }
 </style>
