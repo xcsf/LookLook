@@ -3,9 +3,13 @@
     <g-header class="wrapper-guide">header</g-header>
     <g-content class="wrapper-main">
       <g-layout class="wrapper-main-layout">
-        <g-sider class="sider-right">sider</g-sider>
+        <g-sider class="sider-right">
+          <g-dancer></g-dancer>
+        </g-sider>
         <g-content class="content">content</g-content>
-        <g-sider class="sider-left">sider</g-sider>
+        <g-sider class="sider-left">
+          <g-dancer></g-dancer>
+        </g-sider>
       </g-layout>
     </g-content>
     <g-footer class="wrapper-footer">footer</g-footer>
@@ -18,6 +22,7 @@ import gFooter from "@/components/layout/footer";
 import gHeader from "@/components/layout/header";
 import gLayout from "@/components/layout/layout";
 import gSider from "@/components/layout/sider";
+import gDancer from "@/components/dancer";
 export default {
   name: "Layout",
   components: {
@@ -25,7 +30,8 @@ export default {
     gFooter,
     gHeader,
     gLayout,
-    gSider
+    gSider,
+    gDancer
   }
 };
 </script>
