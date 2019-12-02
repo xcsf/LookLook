@@ -1,13 +1,15 @@
-import HelloWorld from '../components/HelloWorld'
+import Layout from '@/view/layout'
 const routes = [
     {
         path: '/',
-        component: HelloWorld,
-        redirect: '/home'
+        component: Layout,
+        redirect: '/home',
+        children:[
+        ]
     },
     {
         path: '/home',
-        component: HelloWorld,
+        component: Layout,
     }
 ]
 export default routes

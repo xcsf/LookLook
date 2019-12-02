@@ -1,5 +1,10 @@
+var path = require('path');
 module.exports = {
     configureWebpack: {
-        plugins: []
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, 'src')
+            }
+        }
     }
 }
