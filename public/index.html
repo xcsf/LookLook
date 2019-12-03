@@ -363,11 +363,6 @@
                     this.vy = 0.0;
                 }
                 update(robot) {
-                    // ---- dragging ----
-                    if (robot === pointer.dancerDrag && this === pointer.pointDrag) {
-                        this.x += (pointer.x - this.x) * 0.1;
-                        this.y += (pointer.y - this.y) * 0.1;
-                    }
                     // ---- dance ----
                     if (robot !== pointer.dancerDrag) {
                         this.fn && this.fn(16 * Math.sqrt(robot.size), robot.dir);
@@ -395,8 +390,6 @@
             let pointer = {
                 x: 0,
                 y: 0,
-                dancerDrag: null,
-                pointDrag: null
             };
             let ts = 1;
             let lastTime = 0;
@@ -411,50 +404,11 @@
                         initRobots();
                         requestAnimationFrame(run);
                         break;
-                    case "resize":
-                        canvas.width = e.data.width;
-                        canvas.height = e.data.height;
-                        canvas.resize = true;
-                        break;
-                    case "pointerMove":
-                        pointer.x = e.data.x;
-                        pointer.y = e.data.y;
-                        break;
-                    case "pointerDown":
-                        pointer.x = e.data.x;
-                        pointer.y = e.data.y;
-                        for (const dancer of dancers) {
-                            for (const point of dancer.points) {
-                                const dx = pointer.x - point.x;
-                                const dy = pointer.y - point.y;
-                                const d = Math.sqrt(dx * dx + dy * dy);
-                                if (d < 60) {
-                                    pointer.dancerDrag = dancer;
-                                    pointer.pointDrag = point;
-                                    dancer.frame = 0;
-                                }
-                            }
-                        }
-                        break;
-                    case "pointerUp":
-                        pointer.dancerDrag = null;
-                        break;
-                }
-            };
-            // ---- resize screen ----
-            const resize = () => {
-                canvas.elem.width = canvas.width;
-                canvas.elem.height = canvas.height;
-                canvas.resize = false;
-                ground = canvas.height > 500 ? 0.85 : 1.0;
-                for (let i = 0; i < dancers.length; i++) {
-                    dancers[i].x = ((i + 2) * canvas.width) / 9;
                 }
             };
             // ---- main loop ----
             const run = time => {
                 requestAnimationFrame(run);
-                if (canvas.resize === true) resize();
                 // ---- adjust speed to screen freq ----
                 if (lastTime !== 0) {
                     const t = (time - lastTime) / 16;
@@ -539,18 +493,6 @@
                 elem: canvas
             });
         }
-        // ---- resize event ----
-        window.addEventListener(
-            "resize",
-            () => {
-                worker.postMessage({
-                    msg: "resize",
-                    width: canvas.offsetWidth,
-                    height: canvas.offsetHeight
-                });
-            },
-            false
-        );
     }
 </script>
 
