@@ -7,7 +7,8 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter);
 Vue.use(ElementUI);
 const router = new VueRouter({
-    routes
+    routes,
+    base: '/LookLook/'
 })
 Vue.config.productionTip = false
 new Vue({

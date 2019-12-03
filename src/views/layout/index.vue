@@ -8,7 +8,9 @@
         <g-sider class="sider-right">
           <g-dancer></g-dancer>
         </g-sider>
-        <g-content class="content">content</g-content>
+        <g-content class="content">
+          <router-view></router-view>
+        </g-content>
         <g-sider class="sider-left">
           <g-dancer></g-dancer>
         </g-sider>
