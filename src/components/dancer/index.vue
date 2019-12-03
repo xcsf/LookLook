@@ -1,5 +1,5 @@
 <template>
-  <div class="stage">
+  <div class="stage" :style="{top}">
     <canvas class="stage-dancerone" id="dancerone"></canvas>
     <canvas class="stage-dancertwo" id="dancertwo"></canvas>
   </div>
@@ -9,16 +9,26 @@
 export default {
   name: "JustDance",
   data() {
-    return {};
+    return {
+      top: null
+    };
   },
   mounted() {
-    console.log();
     setTimeout(() => {
       window.xxx(this.$el.querySelector("#dancerone"));
       window.xxx(this.$el.querySelector("#dancertwo"));
     }, 1000);
+    window.addEventListener("scroll", this.onscroll);
+    this.top = window.scrollY + "px";
   },
-  methods: {}
+  methods: {
+    onscroll(e) {
+      this.top = window.scrollY + "px";
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.onscroll);
+  }
 };
 </script>
 
@@ -26,6 +36,9 @@ export default {
 .stage {
   position: absolute;
   height: 100%;
+  & .dancer-wrapper {
+    position: fixed;
+  }
   &-dancerone {
     display: block;
     position: relative;

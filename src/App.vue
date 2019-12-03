@@ -13,5 +13,7 @@ export default {
 
 <style>
 #app {
+  font-size: 16px;
+  color: #2c3e50;
 }
 </style>

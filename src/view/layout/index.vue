@@ -1,6 +1,8 @@
 <template>
   <g-layout class="wrapper-home">
-    <g-header class="wrapper-guide">header</g-header>
+    <g-header class="wrapper-guide">
+      <g-navmenu></g-navmenu>
+    </g-header>
     <g-content class="wrapper-main">
       <g-layout class="wrapper-main-layout">
         <g-sider class="sider-right">
@@ -12,7 +14,7 @@
         </g-sider>
       </g-layout>
     </g-content>
-    <g-footer class="wrapper-footer">footer</g-footer>
+    <!-- <g-footer class="wrapper-footer">footer</g-footer> -->
   </g-layout>
 </template>
 
@@ -23,14 +25,16 @@ import gHeader from "@/components/layout/header";
 import gLayout from "@/components/layout/layout";
 import gSider from "@/components/layout/sider";
 import gDancer from "@/components/dancer";
+import gNavmenu from "@/components/navmenu";
 export default {
   name: "Layout",
   components: {
     gContent,
-    gFooter,
+    // gFooter,
     gHeader,
     gLayout,
     gSider,
+    gNavmenu,
     gDancer
   }
 };
@@ -39,35 +43,46 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   &-home {
-    height: 100vh;
-    min-width: 1300px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    min-width: 1500px;
   }
   &-guide {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
     background-color: lightskyblue;
-    height: 10%;
+    height: 3.6rem;
+    line-height: 2.2rem;
+    z-index: 20;
   }
   &-main {
-    height: 80%;
+    height: 1500px;
+    margin-top: 3.6rem;
     &-layout {
       height: 100%;
       > .content {
-        background-color: lightskyblue;
+        background-color: blue;
         height: 100%;
       }
       > .sider {
         &-right {
           width: 15%;
+          height: calc(100vh - 3.6rem);
         }
         &-left {
           width: 15%;
+          height: calc(100vh - 3.6rem);
         }
       }
     }
   }
-
-  &-footer {
-    background-color: lightskyblue;
-    height: 10%;
-  }
+  //   &-footer {
+  //     background-color: lightskyblue;
+  //     height: 100px;
+  //   }
 }
 </style>
