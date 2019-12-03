@@ -225,26 +225,6 @@
                 }
                 update() {
                     if (++this.frame % Math.round(20 / ts) === 0) this.dir = -this.dir;
-                    if (
-                        this === pointer.dancerDrag &&
-                        this.size < 16 &&
-                        this.frame > 600
-                    ) {
-                        pointer.dancerDrag = null;
-                        dancers.push(
-                            new Robot(
-                                this.color + 90,
-                                this.light * 1.25,
-                                this.size * 2,
-                                pointer.x,
-                                pointer.y - 100 * this.size * 2,
-                                struct
-                            )
-                        );
-                        dancers.sort(function (d0, d1) {
-                            return d0.size - d1.size;
-                        });
-                    }
                     // ---- update links ----
                     for (const link of this.links) link.update();
                     // ---- update points ----
@@ -298,7 +278,7 @@
                     this.image = this.stroke(
                         "hsl(" +
                         parent.color +
-                        " ,30%, " +
+                        " ,100%, " +
                         parent.light * this.light +
                         "%)",
                         true,
@@ -504,10 +484,11 @@
                 for (let i = 0; i < 1; i++) {
                     dancers.push(
                         new Robot(
-                            (i * 360) / 7,
+                            Math.random() * -360 + 360,
                             80,
                             Math.sqrt(Math.min(canvas.width, canvas.height)) / 6,
-                            ((i + 2) * canvas.width) / 9,
+                            canvas.width / 2,
+                            // ((i + 2) * canvas.width) / 9,
                             canvas.height * 0.5 - 100,
                             struct
                         )
@@ -570,45 +551,6 @@
             },
             false
         );
-        // ---- pointer events ----
-        const pointer = {
-            x: 0,
-            y: 0,
-            down(e) {
-                this.move(e);
-                worker.postMessage({
-                    msg: "pointerDown",
-                    x: this.x,
-                    y: this.y
-                });
-            },
-            up(e) {
-                worker.postMessage({
-                    msg: "pointerUp"
-                });
-            },
-            move(e) {
-                if (e.targetTouches) {
-                    e.preventDefault();
-                    this.x = e.targetTouches[0].clientX;
-                    this.y = e.targetTouches[0].clientY;
-                } else {
-                    this.x = e.clientX;
-                    this.y = e.clientY;
-                }
-                worker.postMessage({
-                    msg: "pointerMove",
-                    x: this.x,
-                    y: this.y
-                });
-            }
-        };
-        // window.addEventListener("mousemove", e => pointer.move(e), false);
-        // canvas.addEventListener("touchmove", e => pointer.move(e), false);
-        // window.addEventListener("mousedown", e => pointer.down(e), false);
-        // window.addEventListener("touchstart", e => pointer.down(e), false);
-        // window.addEventListener("mouseup", e => pointer.up(e), false);
-        // window.addEventListener("touchend", e => pointer.up(e), false);
     }
 </script>
 
