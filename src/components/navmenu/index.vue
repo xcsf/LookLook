@@ -1,13 +1,12 @@
 <template>
   <header class="wrapper">
-    <a href="#">xxx</a>
+    <h1>
+      <a href="#">
+        <img :src="icon" alt />
+      </a>
+    </h1>
     <div class="wrapper-links">
-      <!-- <el-menu
-        :default-active="activeIndex"
-        class="el-menu-demo"
-        mode="horizontal"
-        @select="handleSelect"
-      >
+      <el-menu class="link" :default-active="activeIndex" mode="horizontal" @select="handleSelect">
         <el-menu-item index="1">处理中心</el-menu-item>
         <el-submenu index="2">
           <template slot="title">我的工作台</template>
@@ -21,11 +20,10 @@
             <el-menu-item index="2-4-3">选项3</el-menu-item>
           </el-submenu>
         </el-submenu>
-        <el-menu-item index="3" disabled>消息中心</el-menu-item>
         <el-menu-item index="4">
-          <a href="https://www.ele.me" target="_blank">订单管理</a>
+          <a href="#" target="_blank">订单管理</a>
         </el-menu-item>
-      </el-menu>-->
+      </el-menu>
     </div>
   </header>
 </template>
@@ -36,7 +34,7 @@ export default {
   data() {
     return {
       activeIndex: "1",
-      activeIndex2: "1"
+      icon: require("@/assets/logo.png")
     };
   },
   methods: {
@@ -50,11 +48,29 @@ export default {
 .wrapper {
   position: absolute;
   width: 100%;
+  > h1 {
+    margin-left: 250px;
+    line-height: 3.6rem;
+    float: left;
+    height: 3.6rem;
+    > a {
+      height: 3.6rem;
+      display: block;
+      > img {
+        height: 3.6rem;
+        line-height: 3.6rem;
+        vertical-align: sub;
+      }
+    }
+  }
   &-links {
-    position: relative;
-
-    width: 60%;
-    right: 0;
+    height: 100%;
+    width: 100%;
+    > .link {
+      height: 3.6rem;
+      float: right;
+      width: 500px;
+    }
   }
 }
 </style>

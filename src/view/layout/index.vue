@@ -54,7 +54,7 @@ export default {
     top: 0;
     right: 0;
     left: 0;
-    background-color: lightskyblue;
+    background-color: #fff;
     height: 3.6rem;
     line-height: 2.2rem;
     z-index: 20;
@@ -65,7 +65,7 @@ export default {
     &-layout {
       height: 100%;
       > .content {
-        background-color: blue;
+        background-color: gainsboro;
         height: 100%;
       }
       > .sider {
