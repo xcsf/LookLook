@@ -62,13 +62,10 @@ export default {
     z-index: 20;
   }
   &-main {
-    height: 1500px;
     margin-top: 3.6rem;
     &-layout {
-      height: 100%;
       > .content {
-        background-color: gainsboro;
-        height: 100%;
+        border: 1px solid gainsboro;
       }
       > .sider {
         &-right {

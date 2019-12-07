@@ -1,5 +1,6 @@
 import Layout from '@/views/layout'
 import Game from '@/components/game'
+import Marked from '@/components/marked'
 const routes = [
     { path: '/404', component: () => import('@/views/404'), hidden: true },
     {
@@ -7,7 +8,8 @@ const routes = [
         component: Layout,
         redirect: '/home',
         children: [
-            { path: '/game1', component: Game }
+            { path: '/game1', component: Game },
+            { path: '/marked', component: Marked }
         ]
     },
     {
