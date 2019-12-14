@@ -49,7 +49,7 @@ export default {
     top: 0;
     left: 0;
     right: 0;
-    min-width: 1500px;
+    min-width: 1000px;
   }
   &-guide {
     position: fixed;
@@ -66,15 +66,14 @@ export default {
     &-layout {
       > .content {
         border: 1px solid gainsboro;
+        height: calc(100vh - 3.6rem);
       }
       > .sider {
         &-right {
           width: 15%;
-          height: calc(100vh - 3.6rem);
         }
         &-left {
           width: 15%;
-          height: calc(100vh - 3.6rem);
         }
       }
     }
