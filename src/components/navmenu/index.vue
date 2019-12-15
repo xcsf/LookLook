@@ -43,6 +43,7 @@ export default {
       icon: require("@/assets/logo.png")
     };
   },
+  mounted() {},
   methods: {
     handleSelect(key, keyPath) {
       console.log(key, keyPath);
@@ -59,6 +60,7 @@ a {
   display: block;
 }
 .wrapper {
+  user-select: none;
   position: absolute;
   width: 100%;
   > h1 {

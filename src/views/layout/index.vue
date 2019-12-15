@@ -67,6 +67,7 @@ export default {
       > .content {
         border: 1px solid gainsboro;
         height: calc(100vh - 3.6rem);
+        width: 70%;
       }
       > .sider {
         &-right {
