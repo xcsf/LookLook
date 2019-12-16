@@ -10,25 +10,15 @@ export default {
   data() {
     return {
       canvas: null,
-      gl: null,
-      a_Position: null,
-      VSHADER_SOURCE:
-        "attribute vec4 a_Position;\n" +
-        "void main() {\n" +
-        "  gl_Position = a_Position;\n" +
-        "  gl_PointSize = 10.0;\n" +
-        "}\n",
-      FSHADER_SOURCE:
-        "void main() {\n" +
-        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
-        "}\n",
-      points: []
+      gl: null
     };
   },
   created() {},
   mounted() {
-    this.initWebGL();
-    this.draw();
+    this.canvas = this.$el.querySelector("canvas");
+    this.onresize();
+    // this.initWebGL();
+    // this.draw();
     // window.addEventListener("resize", this.onresize);
   },
   methods: {
@@ -65,29 +55,24 @@ export default {
           this.points[i + 1],
           0.0
         );
-
         // Draw
         this.gl.drawArrays(this.gl.POINTS, 0, 1);
       }
     },
     initWebGL() {
-      this.canvas = this.$el.querySelector("canvas");
-      this.onresize();
       this.gl = this.canvas.getContext("webgl");
       if (!this.gl) {
         alert(
           "Unable to initialize WebGL. Your browser or machine may not support it."
         );
       }
-      if (
-        !this.initShaders(this.gl, this.VSHADER_SOURCE, this.FSHADER_SOURCE)
-      ) {
-        console.log("Failed to intialize shaders.");
-        return;
-      }
     },
     initShaders(gl, vshader, fshader) {
       let program = this.createProgram(gl, vshader, fshader);
+      if (!program) {
+        console.log("Failed to create program");
+        return false;
+      }
       gl.useProgram(program);
       gl.program = program;
       return true;
@@ -96,11 +81,15 @@ export default {
       // Create shader object
       var vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vshader);
       var fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fshader);
+
       if (!vertexShader || !fragmentShader) {
         return null;
       }
       // Create a program object
       var program = gl.createProgram();
+      if (!program) {
+        return null;
+      }
       gl.attachShader(program, vertexShader);
       gl.attachShader(program, fragmentShader);
       gl.linkProgram(program);
@@ -142,10 +131,7 @@ export default {
       this.canvas.height = height.slice(0, -2);
     }
   },
-  beforeDestroy() {
-    window.removeEventListener("resize", this.onresize);
-    window.removeEventListener("load", this.onresize);
-  }
+  beforeDestroy() {}
 };
 </script>
 

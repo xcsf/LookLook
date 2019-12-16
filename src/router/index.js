@@ -8,7 +8,7 @@ const routes = [
         children: [
             { path: '/game1', component: () => import('@/components/game') },
             { path: '/marked', component: () => import('@/components/marked') },
-            { path: '/webgl', component: () => import('@/components/webgl') }
+            { path: '/clickPoints', component: () => import('@/components/webgl/clickPoints') }
 
         ]
     },

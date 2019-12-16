@@ -16,9 +16,14 @@
           <el-menu-item index="2-2">
             <router-link to="/marked">Marked</router-link>
           </el-menu-item>
-          <el-menu-item index="2-3">
-            <router-link to="/webgl">WebGL</router-link>
-          </el-menu-item>
+          <el-submenu index="2-3">
+            <template slot="title">WebGL</template>
+            <el-menu-item index="2-3-1">
+              <router-link to="/clickPoints">ClickPoints</router-link>
+            </el-menu-item>
+            <el-menu-item index="2-3-2">选项2</el-menu-item>
+            <el-menu-item index="2-3-3">选项3</el-menu-item>
+          </el-submenu>
           <el-submenu index="2-4">
             <template slot="title">选项4</template>
             <el-menu-item index="2-4-1">选项1</el-menu-item>
