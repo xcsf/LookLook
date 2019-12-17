@@ -17,48 +17,8 @@ export default {
   mounted() {
     this.canvas = this.$el.querySelector("canvas");
     this.onresize();
-    // this.initWebGL();
-    // this.draw();
-    // window.addEventListener("resize", this.onresize);
   },
   methods: {
-    draw() {
-      this.a_Position = this.gl.getAttribLocation(
-        this.gl.program,
-        "a_Position"
-      );
-      if (this.a_Position < 0) {
-        console.log("Failed to get the storage location of a_Position");
-        return;
-      }
-      this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      // Clear the color buffer with specified clear color
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      this.canvas.onmousedown = this.onClick;
-    },
-    onClick(event) {
-      var x = event.clientX; // x coordinate of a mouse pointer
-      var y = event.clientY; // y coordinate of a mouse pointer
-      var rect = event.target.getBoundingClientRect();
-      x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
-      y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
-      console.log({ x, y });
-      this.points.push(x);
-      this.points.push(y);
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      var len = this.points.length;
-      for (var i = 0; i < len; i += 2) {
-        // Pass the position of a point to a_Position variable
-        this.gl.vertexAttrib3f(
-          this.a_Position,
-          this.points[i],
-          this.points[i + 1],
-          0.0
-        );
-        // Draw
-        this.gl.drawArrays(this.gl.POINTS, 0, 1);
-      }
-    },
     initWebGL() {
       this.gl = this.canvas.getContext("webgl");
       if (!this.gl) {

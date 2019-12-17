@@ -16,6 +16,7 @@ export default {
       canvas: null,
       gl: null,
       a_Position: null,
+      u_FragColor: null,
       VSHADER_SOURCE:
         "attribute vec4 a_Position;\n" +
         "void main() {\n" +
@@ -23,10 +24,13 @@ export default {
         "  gl_PointSize = 10.0;\n" +
         "}\n",
       FSHADER_SOURCE:
+        "precision mediump float;\n" +
+        "uniform vec4 u_FragColor;\n" +
         "void main() {\n" +
-        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
+        "  gl_FragColor = u_FragColor;\n" +
         "}\n",
-      points: []
+      points: [],
+      colors: []
     };
   },
   created() {},
@@ -56,6 +60,14 @@ export default {
         console.log("Failed to get the storage location of a_Position");
         return;
       }
+      this.u_FragColor = this.gl.getUniformLocation(
+        this.gl.program,
+        "u_FragColor"
+      );
+      if (!this.u_FragColor) {
+        console.log("Failed to get the storage location of u_FragColor");
+        return;
+      }
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
       // Clear the color buffer with specified clear color
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
@@ -68,18 +80,19 @@ export default {
       x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
       y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
       console.log({ x, y });
-      this.points.push(x);
-      this.points.push(y);
+      this.points.push([x,y]);
+      this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      var len = this.points.length;
-      for (var i = 0; i < len; i += 2) {
+      let len = this.points.length;
+      for (var i = 0; i < len; i++) {
         // Pass the position of a point to a_Position variable
         this.gl.vertexAttrib3f(
           this.a_Position,
-          this.points[i],
-          this.points[i + 1],
+          this.points[i][0],
+          this.points[i][1],
           0.0
         );
+        this.gl.uniform4fv(this.u_FragColor, this.colors[i]);
         // Draw
         this.gl.drawArrays(this.gl.POINTS, 0, 1);
       }
