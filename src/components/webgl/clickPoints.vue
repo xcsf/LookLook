@@ -74,13 +74,17 @@ export default {
       this.canvas.addEventListener("mousedown", this.onClick);
     },
     onClick(event) {
+      for (let j = 0; j < 1000; j++) {
+        this.points.push([Math.random(), Math.random()]);
+        this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
+      }
       var x = event.clientX; // x coordinate of a mouse pointer
       var y = event.clientY; // y coordinate of a mouse pointer
       var rect = event.target.getBoundingClientRect();
       x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
       y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
       console.log({ x, y });
-      this.points.push([x,y]);
+      this.points.push([x, y]);
       this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
       let len = this.points.length;
