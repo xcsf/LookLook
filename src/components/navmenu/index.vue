@@ -21,7 +21,9 @@
             <el-menu-item index="2-3-1">
               <router-link to="/clickPoints">ClickPoints</router-link>
             </el-menu-item>
-            <el-menu-item index="2-3-2">选项2</el-menu-item>
+            <el-menu-item index="2-3-2">
+              <router-link to="/multiPoint">MultiPoint</router-link>
+            </el-menu-item>
             <el-menu-item index="2-3-3">选项3</el-menu-item>
           </el-submenu>
           <el-submenu index="2-4">
