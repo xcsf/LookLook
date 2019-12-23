@@ -1,6 +1,16 @@
 <template>
   <div class="wrapper">
     <g-canvas ref="gcanvas"></g-canvas>
+    <div class="selecter-mode">
+      <el-radio-group v-model="radio" @change="onChangeSelect">
+        <el-radio label="LINES">LINES</el-radio>
+        <el-radio label="LINE_STRIP">LINE_STRIP</el-radio>
+        <el-radio label="LINE_LOOP">LINE_LOOP</el-radio>
+        <el-radio label="TRIANGLES">TRIANGLES</el-radio>
+        <el-radio label="TRIANGLE_STRIP">TRIANGLE_STRIP</el-radio>
+        <el-radio label="TRIANGLE_FAN">TRIANGLE_FAN</el-radio>
+      </el-radio-group>
+    </div>
   </div>
 </template>
 
@@ -32,7 +42,8 @@ export default {
         "}\n",
       points: [],
       colors: [],
-      vertices: new Float32Array([0.0, 0.5, -0.5, -0.5, 0.5, -0.5])
+      vertices: new Float32Array(),
+      radio: "LINES"
     };
   },
   created() {},
@@ -96,7 +107,6 @@ export default {
       let rect = event.target.getBoundingClientRect();
       x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
       y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
-      console.log({ x, y });
       this.points.push([x, y]);
       this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
       this.vertices = new Float32Array([].concat(...this.points));
@@ -106,8 +116,14 @@ export default {
       }
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
       // Draw
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, Math.floor(this.points.length));
-      this.gl.drawArrays(this.gl.POINTS, 0, Math.floor(this.points.length));
+      let n = Math.floor(this.points.length);
+      console.log(Math.floor(this.points.length));
+      this.gl.drawArrays(this.gl.POINTS, 0, n);
+      this.gl.drawArrays(this.gl[this.radio], 0, n);
+    },
+    onChangeSelect(event) {
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+      this.points = [];
     }
   },
   beforeDestroy() {
@@ -119,5 +135,12 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   height: 100%;
+  position: relative;
+  & .selecter-mode {
+    margin: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
 </style>

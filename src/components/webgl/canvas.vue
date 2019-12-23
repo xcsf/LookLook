@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper-canvas">
     <canvas id="webgl">Please use a browser that supports "canvas"</canvas>
   </div>
 </template>
@@ -96,7 +96,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.wrapper {
+.wrapper-canvas {
   height: 100%;
 }
 </style>
