@@ -9,7 +9,7 @@ const routes = [
             { path: '/game1', component: () => import('@/components/game') },
             { path: '/marked', component: () => import('@/components/marked') },
             { path: '/clickPoints', component: () => import('@/components/webgl/clickPoints') },
-            { path: '/multiPoint', component: () => import('@/components/webgl/multiPoint') }
+            { path: '/multiGraphics', component: () => import('@/components/webgl/multiGraphics') }
 
         ]
     },

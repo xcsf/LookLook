@@ -17,7 +17,7 @@
 <script>
 import gCanvas from "./canvas";
 export default {
-  name: "WebGL",
+  name: "multigraphics",
   components: {
     gCanvas
   },

@@ -22,7 +22,7 @@
               <router-link to="/clickPoints">ClickPoints</router-link>
             </el-menu-item>
             <el-menu-item index="2-3-2">
-              <router-link to="/multiPoint">MultiPoint</router-link>
+              <router-link to="/multiGraphics">multiGraphics</router-link>
             </el-menu-item>
             <el-menu-item index="2-3-3">选项3</el-menu-item>
           </el-submenu>
