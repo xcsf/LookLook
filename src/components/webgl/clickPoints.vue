@@ -35,7 +35,6 @@ export default {
   },
   created() {},
   mounted() {
-    this.$refs.gcanvas.initWebGL();
     this.gl = this.$refs.gcanvas.gl;
     this.canvas = this.$refs.gcanvas.canvas;
     if (

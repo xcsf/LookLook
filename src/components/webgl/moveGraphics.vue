@@ -1,23 +1,13 @@
 <template>
   <div class="wrapper">
     <g-canvas ref="gcanvas"></g-canvas>
-    <div class="selecter-mode">
-      <el-radio-group v-model="radio" @change="onChangeSelect">
-        <el-radio label="LINES">LINES</el-radio>
-        <el-radio label="LINE_STRIP">LINE_STRIP</el-radio>
-        <el-radio label="LINE_LOOP">LINE_LOOP</el-radio>
-        <el-radio label="TRIANGLES">TRIANGLES</el-radio>
-        <el-radio label="TRIANGLE_STRIP">TRIANGLE_STRIP</el-radio>
-        <el-radio label="TRIANGLE_FAN">TRIANGLE_FAN</el-radio>
-      </el-radio-group>
-    </div>
   </div>
 </template>
 
 <script>
 import gCanvas from "./canvas";
 export default {
-  name: "multigraphics",
+  name: "moveGraphics",
   components: {
     gCanvas
   },
@@ -27,11 +17,13 @@ export default {
       gl: null,
       a_Position: null,
       u_FragColor: null,
+      u_Translation: null,
       vertexBuffer: null,
       VSHADER_SOURCE:
         "attribute vec4 a_Position;\n" +
+        "uniform vec4 u_Translation;\n" +
         "void main() {\n" +
-        "  gl_Position = a_Position;\n" +
+        "  gl_Position = a_Position + u_Translation;\n" +
         "  gl_PointSize = 10.0;\n" +
         "}\n",
       FSHADER_SOURCE:
@@ -42,8 +34,10 @@ export default {
         "}\n",
       points: [],
       colors: [],
-      vertices: new Float32Array(),
-      radio: "LINES"
+      offset: [0.0, 0.0, 0.0],
+      speedX: 10,
+      speedY: 10,
+      vertices: new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5])
     };
   },
   created() {},
@@ -60,29 +54,30 @@ export default {
       console.log("Failed to intialize shaders.");
       return;
     }
-    this.draw();
+    this.speedX = this.speedX / this.canvas.width;
+    this.speedY = this.speedY / this.canvas.height;
+    this.draw(this.gl);
   },
   methods: {
-    draw() {
-      this.a_Position = this.gl.getAttribLocation(
-        this.gl.program,
-        "a_Position"
-      );
+    draw(gl) {
+      this.a_Position = gl.getAttribLocation(gl.program, "a_Position");
       if (this.a_Position < 0) {
         console.log("Failed to get the storage location of a_Position");
         return;
       }
-      this.u_FragColor = this.gl.getUniformLocation(
-        this.gl.program,
-        "u_FragColor"
-      );
+      this.u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
       if (!this.u_FragColor) {
         console.log("Failed to get the storage location of u_FragColor");
         return;
       }
-      this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
       // Clear the color buffer with specified clear color
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      if (this.initVertexBuffers(gl) < 0) {
+        console.log("Failed to set the positions of the vertices");
+        return;
+      }
+      this.u_Translation = gl.getUniformLocation(gl.program, "u_Translation");
       this.canvas.addEventListener("mousedown", this.onClick);
     },
     initVertexBuffers(gl) {
@@ -101,28 +96,36 @@ export default {
       gl.enableVertexAttribArray(this.a_Position);
     },
     onClick(event) {
-      let x = event.clientX; // x coordinate of a mouse pointer
-      let y = event.clientY; // y coordinate of a mouse pointer
-      let rect = event.target.getBoundingClientRect();
-      x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
-      y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
-      this.points.push([x, y]);
-      this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
-      this.vertices = new Float32Array([].concat(...this.points));
-      if (this.initVertexBuffers(this.gl) < 0) {
-        console.log("Failed to set the positions of the vertices");
-        return;
-      }
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      // Draw
-      let n = Math.floor(this.points.length);
-      console.log(Math.floor(this.points.length));
-      this.gl.drawArrays(this.gl.POINTS, 0, n);
-      this.gl.drawArrays(this.gl[this.radio], 0, n);
+      //   let x = event.clientX; // x coordinate of a mouse pointer
+      //   let y = event.clientY; // y coordinate of a mouse pointer
+      //   let rect = event.target.getBoundingClientRect();
+      //   x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
+      //   y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
+      //   this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
+      setInterval(() => {
+        this.moveTrangle();
+        this.gl.uniform4f(
+          this.u_Translation,
+          this.offset[0],
+          this.offset[1],
+          this.offset[2],
+          0.0
+        );
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        // Draw
+        this.gl.drawArrays(this.gl.POINTS, 0, 3);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
+      }, 16);
     },
-    onChangeSelect(event) {
-      this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      this.points = [];
+    moveTrangle() {
+      if (this.offset[0] + 0.5 >= 1.0 || this.offset[0] - 0.5 <= -1.0) {
+        this.speedX = -this.speedX;
+      }
+      if (this.offset[1] + 0.5 >= 1.0 || this.offset[1] - 0.5 <= -1.0) {
+        this.speedY = -this.speedY;
+      }
+      this.offset[0] += this.speedX;
+      this.offset[1] += this.speedY;
     }
   },
   beforeDestroy() {
@@ -135,11 +138,5 @@ export default {
 .wrapper {
   height: 100%;
   position: relative;
-  & .selecter-mode {
-    margin: 10px;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
 }
 </style>

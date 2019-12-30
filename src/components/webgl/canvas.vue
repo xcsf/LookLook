@@ -17,6 +17,7 @@ export default {
   mounted() {
     this.canvas = this.$el.querySelector("canvas");
     this.onresize();
+    this.initWebGL()
   },
   methods: {
     initWebGL() {
