@@ -119,9 +119,21 @@ export default {
     },
     moveTrangle() {
       if (this.offset[0] + 0.5 >= 1.0 || this.offset[0] - 0.5 <= -1.0) {
+        this.gl.uniform4fv(this.u_FragColor, [
+          Math.random(),
+          Math.random(),
+          Math.random(),
+          0.5
+        ]);
         this.speedX = -this.speedX;
       }
       if (this.offset[1] + 0.5 >= 1.0 || this.offset[1] - 0.5 <= -1.0) {
+        this.gl.uniform4fv(this.u_FragColor, [
+          Math.random(),
+          Math.random(),
+          Math.random(),
+          0.5
+        ]);
         this.speedY = -this.speedY;
       }
       this.offset[0] += this.speedX;
