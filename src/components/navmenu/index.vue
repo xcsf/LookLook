@@ -22,10 +22,13 @@
               <router-link to="/clickPoints">ClickPoints</router-link>
             </el-menu-item>
             <el-menu-item index="2-3-2">
-              <router-link to="/multiGraphics">multiGraphics</router-link>
+              <router-link to="/multiGraphics">MultiGraphics</router-link>
             </el-menu-item>
             <el-menu-item index="2-3-3">
-              <router-link to="/moveGraphics">moveGraphics</router-link>
+              <router-link to="/moveGraphics">MoveGraphics</router-link>
+            </el-menu-item>
+            <el-menu-item index="2-3-4">
+              <router-link to="/rotatedGraphics">RotatedGraphics</router-link>
             </el-menu-item>
           </el-submenu>
           <el-submenu index="2-4">

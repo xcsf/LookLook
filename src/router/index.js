@@ -10,7 +10,8 @@ const routes = [
             { path: '/marked', component: () => import('@/components/marked') },
             { path: '/clickPoints', component: () => import('@/components/webgl/clickPoints') },
             { path: '/multiGraphics', component: () => import('@/components/webgl/multiGraphics') },
-            { path: '/moveGraphics', component: () => import('@/components/webgl/moveGraphics') }
+            { path: '/moveGraphics', component: () => import('@/components/webgl/moveGraphics') },
+            { path: '/rotatedGraphics', component: () => import('@/components/webgl/rotatedGraphics') }
         ]
     },
     {
