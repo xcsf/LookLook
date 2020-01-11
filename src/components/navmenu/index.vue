@@ -30,6 +30,9 @@
             <el-menu-item index="2-3-4">
               <router-link to="/rotatedGraphics">RotatedGraphics</router-link>
             </el-menu-item>
+            <el-menu-item index="2-3-5">
+              <router-link to="/loadTextured">LoadTextured</router-link>
+            </el-menu-item>
           </el-submenu>
           <el-submenu index="2-4">
             <template slot="title">选项4</template>
