@@ -17,23 +17,29 @@ export default {
       canvas: null,
       gl: null,
       a_Position: null,
+      a_PointSize: null,
       u_FragColor: null,
+      a_Color: null,
       u_ModelMatrix: null,
-      vertexBuffer: null,
+      vertexSizeBuffer: null,
       VSHADER_SOURCE:
         "attribute vec4 a_Position;\n" +
+        "attribute float a_PointSize;\n" +
+        "attribute vec4 a_Color;\n" +
+        "varying vec4 v_Color;\n" + // varying variable
         "uniform mat4 u_ModelMatrix;\n" +
         "void main() {\n" +
         "  gl_Position = u_ModelMatrix * a_Position;\n" +
-        "  gl_PointSize = 10.0;\n" +
+        "  gl_PointSize = a_PointSize;\n" +
+        "  v_Color = a_Color;\n" + // Pass the data to the fragment shader
         "}\n",
       FSHADER_SOURCE:
         "precision mediump float;\n" +
         "uniform vec4 u_FragColor;\n" +
+        "varying vec4 v_Color;\n" + // Receive the data from the vertex shader
         "void main() {\n" +
-        "  gl_FragColor = u_FragColor;\n" +
+        "  gl_FragColor = v_Color;\n" +
         "}\n",
-      colors: [],
       g_last: Date.now(),
       speedX: 10,
       speedY: 10,
@@ -41,7 +47,26 @@ export default {
       curAngle: 0.0,
       curX: 0.0,
       curY: 0.0,
-      vertices: new Float32Array([0, 0.5, -0.5, -0.5, 0.5, -0.5]),
+      verticesSizeColor: new Float32Array([
+        0,
+        0.5,
+        10.0,
+        1.0,
+        0.0,
+        0.0,
+        -0.5,
+        -0.5,
+        20.0,
+        0.0,
+        1.0,
+        0.0,
+        0.5,
+        -0.5,
+        30.0,
+        0.0,
+        0.0,
+        1.0
+      ]),
       modelMatrix: new Matrix4()
     };
   },
@@ -70,10 +95,20 @@ export default {
         console.log("Failed to get the storage location of a_Position");
         return;
       }
-      this.u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
-      if (!this.u_FragColor) {
-        console.log("Failed to get the storage location of u_FragColor");
+      this.a_PointSize = gl.getAttribLocation(gl.program, "a_PointSize");
+      if (this.a_PointSize < 0) {
+        console.log("Failed to get the storage location of a_PointSize");
         return;
+      }
+    //   this.u_FragColor = gl.getUniformLocation(gl.program, "u_FragColor");
+    //   if (!this.u_FragColor) {
+    //     console.log("Failed to get the storage location of u_FragColor");
+    //     return;
+    //   }
+      this.a_Color = gl.getAttribLocation(gl.program, "a_Color");
+      if (this.a_Color < 0) {
+        console.log("Failed to get the storage location of a_Color");
+        return -1;
       }
       // Pass the rotation matrix to the vertex shader
       this.u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
@@ -88,41 +123,45 @@ export default {
         console.log("Failed to set the positions of the vertices");
         return;
       }
-      console.log(1);
       this.tick();
     },
     initVertexBuffers(gl) {
-      this.vertexBuffer = gl.createBuffer();
-      if (!this.vertexBuffer) {
+      this.vertexSizeBuffer = gl.createBuffer();
+      if (!this.vertexSizeBuffer) {
         console.log("Failed to create the buffer object");
         return -1;
       }
       // Bind the buffer object to target
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexSizeBuffer);
       // Write date into the buffer object
-      gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, this.verticesSizeColor, gl.STATIC_DRAW);
+
+      let FSIZE = this.verticesSizeColor.BYTES_PER_ELEMENT;
       // Assign the buffer object to a_Position letiable
-      gl.vertexAttribPointer(this.a_Position, 2, gl.FLOAT, false, 0, 0);
+      gl.vertexAttribPointer(this.a_Position, 2, gl.FLOAT, false, FSIZE * 6, 0);
       // Enable the assignment to a_Position letiable
       gl.enableVertexAttribArray(this.a_Position);
+
+      gl.vertexAttribPointer( this.a_PointSize, 1, gl.FLOAT, false, FSIZE * 6, FSIZE * 2 );
+      gl.enableVertexAttribArray(this.a_PointSize);
+      
+      gl.vertexAttribPointer( this.a_Color, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3 );
+      gl.enableVertexAttribArray(this.a_Color);
     },
     tick(event) {
-      //   let x = event.clientX; // x coordinate of a mouse pointer
-      //   let y = event.clientY; // y coordinate of a mouse pointer
-      //   let rect = event.target.getBoundingClientRect();
-      //   x = (x - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
-      //   y = (this.canvas.height / 2 - (y - rect.top)) / (this.canvas.height / 2);
-      //   this.colors.push([Math.random(), Math.random(), Math.random(), 1.0]);
-
       this.rotatedGraphics();
       this.draw(); // Draw the triangle
       requestAnimationFrame(this.tick, this.canvas); // Request that the browser calls tick
     },
     draw() {
-      this.gl.uniformMatrix4fv(this.u_ModelMatrix, false, this.modelMatrix.elements);
+      this.gl.uniformMatrix4fv(
+        this.u_ModelMatrix,
+        false,
+        this.modelMatrix.elements
+      );
       this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-      this.gl.drawArrays(this.gl.POINTS, 0, 9);
-      this.gl.drawArrays(this.gl.TRIANGLES, 0, 9);
+      this.gl.drawArrays(this.gl.POINTS, 0, 3);
+      this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
     },
     // Last time that this function was called
     animate(angle) {
@@ -137,21 +176,21 @@ export default {
     rotatedGraphics() {
       this.curAngle = this.animate(this.curAngle);
       if (this.curX >= 0.5 || this.curX <= -0.5) {
-        this.gl.uniform4fv(this.u_FragColor, [
-          Math.random(),
-          Math.random(),
-          Math.random(),
-          0.5
-        ]);
+        // this.gl.uniform4fv(this.u_FragColor, [
+        //   Math.random(),
+        //   Math.random(),
+        //   Math.random(),
+        //   0.5
+        // ]);
         this.speedX = -this.speedX;
       }
       if (this.curY >= 0.5 || this.curY <= -0.5) {
-        this.gl.uniform4fv(this.u_FragColor, [
-          Math.random(),
-          Math.random(),
-          Math.random(),
-          0.5
-        ]);
+        // this.gl.uniform4fv(this.u_FragColor, [
+        //   Math.random(),
+        //   Math.random(),
+        //   Math.random(),
+        //   0.5
+        // ]);
         this.speedY = -this.speedY;
       }
       this.curX += this.speedX;
