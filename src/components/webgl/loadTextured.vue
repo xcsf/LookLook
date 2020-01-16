@@ -21,7 +21,6 @@ export default {
       u_FragColor: null,
       a_Color: null,
       u_ModelMatrix: null,
-      vertexSizeBuffer: null,
       VSHADER_SOURCE:
         "attribute vec4 a_Position;\n" +
         "attribute float a_PointSize;\n" +
@@ -36,32 +35,31 @@ export default {
       FSHADER_SOURCE:
         "precision mediump float;\n" +
         "uniform sampler2D u_Sampler;\n" +
+        "uniform sampler2D u_Sampler1;\n" +
         "varying vec2 v_TexCoord;\n" +
         "void main() {\n" +
-        "  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n" +
+        "  vec4 color = texture2D(u_Sampler, v_TexCoord);\n" +
+        "  vec4 color1 = texture2D(u_Sampler1, v_TexCoord);\n" +
+        "  gl_FragColor = color * color1;\n" +
         "}\n",
       g_last: Date.now(),
-      speedX: 10,
-      speedY: 10 ,
-      speedAngle: 45,
+      speedX: 0,
+      speedY: 0 ,
+      speedAngle: 0,
       curAngle: 0.0,
       curX: 0.0,
       curY: 0.0,
-      verticesSizeColor: new Float32Array([
-        -0.5, 0.5,
-        10.0,
-        0.0, 1.0,
-        -0.5, -0.5,
-        20.0,
-        0.0, 0.0,
-        0.5, 0.5,
-        30.0,
-        1.0, 1.0,
-        0.5, -0.5,
-        40.0,
-        1.0, 0.0
+      verticesSizeColorTexCoords: new Float32Array([
+        -0.5, 0.5, 10.0, 0.0, 1.0,
+        -0.5, -0.5, 20.0, 0.0, 0.0,
+        0.5, 0.5, 30.0, 1.0, 1.0,
+        0.5, -0.5, 40.0, 1.0, 0.0
       ]),
-      modelMatrix: new Matrix4()
+      modelMatrix: new Matrix4(),
+      u_Sampler:null,
+      u_Sampler1:null,
+      g_texUnit:false,
+      g_texUnit1:false
     };
   },
   created() {},
@@ -100,6 +98,19 @@ export default {
         console.log("Failed to get the storage location of a_TexCoord");
         return -1;
       }
+      
+      // Get the storage location of u_Sampler
+      this.u_Sampler = gl.getUniformLocation(gl.program, "u_Sampler");
+      if (!this.u_Sampler) {
+        console.log("Failed to get the storage location of u_Sampler");
+        return false;
+      }
+      this.u_Sampler1 = gl.getUniformLocation(gl.program, "u_Sampler1");
+      if (!this.u_Sampler1) {
+        console.log("Failed to get the storage location of u_Sampler");
+        return false;
+      }
+
       // Pass the rotation matrix to the vertex shader
       this.u_ModelMatrix = gl.getUniformLocation(gl.program, "u_ModelMatrix");
       if (!this.u_ModelMatrix) {
@@ -121,73 +132,75 @@ export default {
       this.tick();
     },
 
-    initTextures(gl, n) {
+    initTextures(gl) {
       let texture = gl.createTexture(); // Create a texture object
+      let texture1 = gl.createTexture(); // Create a texture object
       if (!texture) {
         console.log("Failed to create the texture object");
         return false;
       }
 
-      // Get the storage location of u_Sampler
-      let u_Sampler = gl.getUniformLocation(gl.program, "u_Sampler");
-      if (!u_Sampler) {
-        console.log("Failed to get the storage location of u_Sampler");
-        return false;
-      }
-      let image = new Image(); // Create the image object
-      if (!image) {
+      // Create the image object
+      let image = new Image();
+      let image1 = new Image();
+      if (!image || !image1) {
         console.log("Failed to create the image object");
         return false;
       }
       // Register the event handler to be called on loading an image
       image.onload = () => {
-        this.loadTexture(gl, n, texture, u_Sampler, image);
+        this.loadTexture(gl, texture,this.u_Sampler, image, 0);
       };
       // Tell the browser to load an image
       image.src = require("@/assets/sky.jpg");
 
+      image1.onload = () => {
+        this.loadTexture(gl, texture1,this.u_Sampler1, image1, 1);
+      };
+      image1.src = require("@/assets/circle.gif");
       return true;
     },
-    loadTexture(gl, n, texture, u_Sampler, image) {
+    loadTexture(gl, texture, u_Sampler, image, texUnit) {
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-      // Enable texture unit0
-      gl.activeTexture(gl.TEXTURE0);
+      // Make the texture unit active
+      if (texUnit == 0) {
+        gl.activeTexture(gl.TEXTURE0);
+        this.g_texUnit0 = true;
+      } else {
+        gl.activeTexture(gl.TEXTURE1);
+        this.g_texUnit1 = true;
+      }
       // Bind the texture object to the target
       gl.bindTexture(gl.TEXTURE_2D, texture);
 
       // Set the texture parameters
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       // Set the texture image
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 
       // Set the texture unit 0 to the sampler
-      gl.uniform1i(u_Sampler, 0);
+      gl.uniform1i(u_Sampler, texUnit);
 
-      gl.clear(gl.COLOR_BUFFER_BIT); // Clear <canvas>
-
-    //   gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
     },
 
     initVertexBuffers(gl) {
-      this.vertexSizeBuffer = gl.createBuffer();
-      if (!this.vertexSizeBuffer) {
+      let vertexSizeColorTexCoordBuffer = gl.createBuffer();
+      if (!vertexSizeColorTexCoordBuffer) {
         console.log("Failed to create the buffer object");
         return -1;
       }
       // Bind the buffer object to target
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexSizeBuffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexSizeColorTexCoordBuffer);
       // Write date into the buffer object
-      gl.bufferData(gl.ARRAY_BUFFER, this.verticesSizeColor, gl.STATIC_DRAW);
+      gl.bufferData(gl.ARRAY_BUFFER, this.verticesSizeColorTexCoords, gl.STATIC_DRAW);
 
-      let FSIZE = this.verticesSizeColor.BYTES_PER_ELEMENT;
-      // Assign the buffer object to a_Position letiable
+      let FSIZE = this.verticesSizeColorTexCoords.BYTES_PER_ELEMENT;
       gl.vertexAttribPointer(this.a_Position, 2, gl.FLOAT, false, FSIZE * 5, 0);
-      // Enable the assignment to a_Position letiable
       gl.enableVertexAttribArray(this.a_Position);
       gl.vertexAttribPointer( this.a_PointSize, 1, gl.FLOAT, false, FSIZE * 5, FSIZE * 2 );
       gl.enableVertexAttribArray(this.a_PointSize);
       gl.vertexAttribPointer(this.a_TexCoord, 2, gl.FLOAT, false, FSIZE * 5, FSIZE * 3);
-      gl.enableVertexAttribArray(this.a_TexCoord);  // Enable the assignment of the buffer object
+      gl.enableVertexAttribArray(this.a_TexCoord);
     },
     tick(event) {
       this.rotatedGraphics();
